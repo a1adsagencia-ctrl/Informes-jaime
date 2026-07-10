@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>AUNADS AGENCIA · Informe de resultados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050505; --panel:#0c0c0c; --ink:#fff; --muted:#8a8a8a; --dim:#555;
+    --line:rgba(255,255,255,.14); --line-strong:rgba(255,255,255,.34);
+    --yellow:#FFE000; --red:#FF3B3B;
+    --font:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+  .fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+  /* ===== NAV DOTS ===== */
+  .navdots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:20;
+    display:flex;flex-direction:column;gap:14px}
+  .navdots a{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);
+    display:block;transition:all .3s ease;position:relative}
+  .navdots a::after{content:attr(data-label);position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;
+    opacity:0;transition:opacity .2s ease;pointer-events:none}
+  .navdots a:hover::after{opacity:1}
+  .navdots a.active{background:var(--yellow);box-shadow:0 0 10px rgba(255,224,0,.55);transform:scale(1.3)}
+  @media (max-width:720px){.navdots{display:none}}
+
+  /* ===== BRAND MARK (fixed corner) ===== */
+  .brandmark{position:fixed;top:22px;left:24px;z-index:20;display:flex;align-items:center;gap:9px;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .brandmark svg{width:20px;height:20px;flex:0 0 auto}
+
+  /* ===== SECTIONS ===== */
+  section{position:relative;z-index:1;min-height:100vh;width:100%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:110px 24px 80px;text-align:center}
+  .wrap{width:100%;max-width:960px}
+
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--yellow);font-weight:600;
+    margin-bottom:18px;font-family:var(--mono)}
+  h1,h2,h3{font-weight:600;line-height:1.05;letter-spacing:-.02em}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+  .reveal.d1{transition-delay:.08s}
+  .reveal.d2{transition-delay:.16s}
+  .reveal.d3{transition-delay:.24s}
+  .reveal.d4{transition-delay:.32s}
+
+  /* ===== PORTADA ===== */
+  #portada{padding:0;justify-content:flex-end;align-items:center;min-height:100vh}
+  .hero-photo{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;
+    filter:grayscale(45%) contrast(1.08) brightness(.9)}
+  .hero-photo::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom, rgba(0,0,0,.15) 0%, rgba(0,0,0,.55) 46%, #050505 92%);}
+  #portada .wrap{position:relative;z-index:1;padding-bottom:64px}
+  .portada-mark{width:60px;height:60px;margin:0 auto 22px;border:1px solid var(--line-strong);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;position:relative;background:rgba(5,5,5,.5);backdrop-filter:blur(6px)}
+  .portada-mark svg{width:30px;height:30px}
+  .portada-agency{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+    font-weight:600;margin-bottom:22px}
+  .portada-title{font-size:clamp(34px,6.4vw,62px);text-wrap:balance}
+  .portada-title .g{color:var(--muted)}
+  .portada-client{font-family:var(--mono);font-size:14px;color:var(--yellow);margin-top:22px;letter-spacing:.02em}
+  .portada-period{color:var(--muted);font-size:14px;margin-top:6px}
+  .scrolldown{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;
+    align-items:center;gap:8px;color:var(--dim);font-size:10px;letter-spacing:.2em;text-transform:uppercase;z-index:2}
+  .scrolldown svg{width:14px;height:14px;animation:bob 1.8s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* ===== RESUMEN (stat grid) ===== */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
+  .stat-cell{background:var(--panel);padding:30px 18px;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .stat-num{font-family:var(--mono);font-size:clamp(22px,4vw,34px);font-weight:700;font-variant-numeric:tabular-nums}
+  .stat-label{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  @media (max-width:640px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* ===== PLATFORM SECTIONS ===== */
+  .platform-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+  .platform-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:100px;
+    border:1px solid var(--line-strong);font-weight:600;font-size:15px}
+  .platform-badge svg{width:18px;height:18px}
+  .section-title{font-size:clamp(24px,4vw,32px);margin:8px 0 44px;color:var(--muted);font-weight:500}
+  .section-title b{color:var(--ink);font-weight:600}
+
+  .ticket-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:left}
+  .ticket{border:1px solid var(--line);border-radius:10px;padding:18px 16px;background:var(--panel);
+    position:relative;overflow:hidden}
+  .ticket::before{content:"";position:absolute;top:0;left:0;width:16px;height:16px;
+    border-top:1px solid var(--line-strong);border-left:1px solid var(--line-strong);border-radius:10px 0 0 0}
+  .ticket-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:var(--mono)}
+  .ticket-value{font-family:var(--mono);font-size:clamp(20px,2.6vw,28px);font-weight:700;font-variant-numeric:tabular-nums}
+  .ticket-delta{font-size:11px;margin-top:8px;color:var(--yellow);font-family:var(--mono);display:flex;align-items:center;gap:4px}
+  .ticket-delta svg{width:10px;height:10px}
+  .ticket-note{font-size:11px;color:var(--dim);margin-top:8px}
+  @media (max-width:760px){.ticket-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* top videos bars */
+  .videos-block{margin-top:52px;text-align:left}
+  .videos-label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:18px;font-family:var(--mono)}
+  .vbar-row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .vbar-idx{font-family:var(--mono);font-size:11px;color:var(--dim);width:16px;flex:0 0 auto}
+  .vbar-track{flex:1;height:26px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden;
+    border:1px solid var(--line)}
+  .vbar-fill{height:100%;width:0%;background:linear-gradient(90deg,rgba(255,224,0,.12),rgba(255,224,0,.55));
+    border-radius:5px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+  .vbar-val{font-family:var(--mono);font-size:12px;color:var(--ink);width:70px;text-align:right;flex:0 0 auto;
+    font-variant-numeric:tabular-nums}
+
+  /* ===== VIDEO THUMBS ===== */
+  .video-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+  .video-thumbs.n3{grid-template-columns:repeat(3,1fr)}
+  .vthumb{position:relative;aspect-ratio:9/14;border-radius:10px;border:1px solid var(--line);overflow:hidden;
+    cursor:pointer;background:linear-gradient(155deg,#141414,#050505);transition:border-color .25s ease,transform .25s ease}
+  .vthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%;
+    filter:grayscale(25%) contrast(1.05) brightness(.82);transition:filter .25s ease}
+  .vthumb::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.15) 55%, rgba(0,0,0,.75) 100%)}
+  .vthumb:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+  .vthumb:hover img{filter:grayscale(0%) contrast(1.05) brightness(.9)}
+  .vthumb .vthumb-idx{position:absolute;top:9px;left:10px;font-family:var(--mono);font-size:10px;color:var(--dim);z-index:2}
+  .vthumb .vthumb-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
+  .vthumb .vthumb-play span{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-strong);
+    background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;
+    transition:transform .25s ease,background .25s ease}
+  .vthumb:hover .vthumb-play span{transform:scale(1.1);background:rgba(255,224,0,.12);border-color:var(--yellow)}
+  .vthumb .vthumb-play svg{width:13px;height:13px;margin-left:2px}
+  .vthumb .vthumb-views{position:absolute;bottom:9px;left:10px;right:10px;font-family:var(--mono);
+    font-size:11px;color:var(--ink);display:flex;align-items:center;justify-content:space-between;z-index:2}
+  .vthumb .vthumb-views .plat{color:var(--dim);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+  @media (max-width:640px){.video-thumbs{grid-template-columns:repeat(2,1fr)}.video-thumbs.n3{grid-template-columns:repeat(2,1fr)}}
+
+  /* ===== VIDEO MODAL ===== */
+  .vmodal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.86);backdrop-filter:blur(6px);padding:40px 20px}
+  .vmodal.open{display:flex}
+  .vmodal-box{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;background:#000;border-radius:14px;
+    overflow:hidden;border:1px solid var(--line-strong);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .vmodal-box iframe{width:100%;height:100%;border:0}
+  .vmodal-close{position:absolute;top:-42px;right:0;width:32px;height:32px;border-radius:50%;
+    border:1px solid var(--line-strong);background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;
+    cursor:pointer}
+  .vmodal-close svg{width:14px;height:14px}
+
+  /* IG profile card */
+  .ig-profile{display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;background:var(--panel);text-align:left;margin-top:10px}
+  .ig-avatar{width:56px;height:56px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 30% 30%,#333,#000);
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-family:var(--mono);
+    font-weight:700;font-size:18px;color:var(--yellow);overflow:hidden}
+  .ig-avatar img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+  .ig-handle{font-weight:600;font-size:15px}
+  .ig-bio{color:var(--muted);font-size:13px;margin-top:3px}
+  .ig-meta{display:flex;gap:16px;margin-top:8px;font-size:12px;color:var(--dim);font-family:var(--mono)}
+  .ig-meta b{color:var(--ink);font-weight:600}
+
+  /* ===== VENTAS ===== */
+  .sales-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+  .sale-cell{border:1px dashed var(--line-strong);border-radius:14px;padding:26px 14px;background:var(--panel)}
+  .sale-icon{width:30px;height:30px;margin:0 auto 14px;color:var(--yellow)}
+  .sale-val{font-family:var(--mono);font-size:clamp(18px,2.6vw,24px);font-weight:700}
+  .sale-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+  @media (max-width:760px){.sales-grid{grid-template-columns:repeat(2,1fr)}}
+  .revenue-total{margin-top:36px;font-family:var(--mono);color:var(--yellow);font-size:14px;letter-spacing:.04em}
+
+  /* ===== CIERRE ===== */
+  #cierre .quote{font-size:clamp(20px,3.4vw,28px);font-weight:500;color:var(--ink);max-width:600px;
+    margin:0 auto 40px;text-wrap:balance}
+  #cierre .mark-lg{width:96px;height:96px;border-radius:50%;border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 26px}
+  #cierre .mark-lg svg{width:48px;height:48px}
+  #cierre .agency-name{font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+  #cierre .foot-note{margin-top:14px;font-size:11px;color:var(--dim)}
+
+  .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 8px rgba(255,59,59,.9);
+    display:inline-block;animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important;transition-duration:.05ms !important}
+  }
+</style>
+</head>
+<body>
+
+<canvas class="fx" id="fx"></canvas>
+
+<div class="brandmark">
+  <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="19" stroke="#8a8a8a" stroke-width="1.2"/>
+    <path d="M12 15c2-3 6-4 9-2M28 25c-2 3-6 4-9 2" stroke="#8a8a8a" stroke-width="1.4" stroke-linecap="round"/></svg>
+  <span id="brandmarkText">AUNADS</span>
+</div>
+
+<nav class="navdots" id="navdots">
+  <a href="#portada" data-label="Portada" class="active"></a>
+  <a href="#resumen" data-label="Resumen"></a>
+  <a href="#tiktok" data-label="TikTok"></a>
+  <a href="#instagram" data-label="Instagram"></a>
+  <a href="#ventas" data-label="Ventas"></a>
+  <a href="#cierre" data-label="Cierre"></a>
+</nav>
+
+<section id="portada">
+  <div class="hero-photo"><img id="heroImg" src="" alt=""></div>
+  <div class="wrap">
+    <div class="portada-mark reveal">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M12 15c2-3 6-4 9-2M28 25c-2 3-6 4-9 2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="portada-agency reveal d1" id="portadaAgency">AUNADS AGENCIA</div>
+    <h1 class="portada-title reveal d2">Informe de <span class="g">resultados</span></h1>
+    <div class="portada-client reveal d3" id="clientName">Jaime Barbosa</div>
+    <div class="portada-period reveal d3" id="clientPeriod">Mentor · Trader · Crypto</div>
+  </div>
+  <div class="scrolldown"><span>Desliza</span>
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M6 14l6 6 6-6" stroke="#555" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<section id="resumen">
+  <div class="wrap">
+    <div class="eyebrow reveal">Resumen ejecutivo</div>
+    <h2 class="section-title reveal d1">Todo el mes en <b>una mirada</b></h2>
+    <div class="stat-grid reveal d2" id="summaryGrid"></div>
+  </div>
+</section>
+
+<section id="tiktok">
+  <div class="wrap">
+    <div class="platform-head reveal">
+      <span class="platform-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z" fill="#fff"/></svg> TikTok</span>
+    </div>
+    <h2 class="section-title reveal d1">Crecimiento en <b>reels cortos</b></h2>
+    <div class="ticket-grid reveal d2" id="tiktokGrid"></div>
+    <div class="videos-block reveal d3">
+      <div class="videos-label">Videos más vistos</div>
+      <div id="tiktokVideos"></div>
+    </div>
+    <div class="videos-block reveal d4">
+      <div class="videos-label">Toca para reproducir</div>
+      <div class="video-thumbs n3" id="tiktokThumbs"></div>
+    </div>
+  </div>
+</section>
+
+<section id="instagram">
+  <div class="wrap">
+    <div class="platform-head reveal">
+      <span class="platform-badge"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="4.2" stroke="#fff" stroke-width="1.6"/><circle cx="17.4" cy="6.6" r="1.1" fill="#fff"/></svg> Instagram</span>
+    </div>
+    <h2 class="section-title reveal d1">Presencia y <b>alcance</b></h2>
+    <div class="ig-profile reveal d2" id="igProfile"></div>
+    <div class="ticket-grid reveal d3" id="igGrid" style="margin-top:16px;grid-template-columns:repeat(2,1fr)"></div>
+    <div class="videos-block reveal d4">
+      <div class="videos-label">Publicaciones más vistas</div>
+      <div id="igVideos"></div>
+    </div>
+    <div class="videos-block reveal d4">
+      <div class="videos-label">Toca para reproducir</div>
+      <div class="video-thumbs" id="igThumbs"></div>
+    </div>
+  </div>
+</section>
+
+<section id="ventas">
+  <div class="wrap">
+    <div class="eyebrow reveal">Conversión</div>
+    <h2 class="section-title reveal d1">De alcance a <b>facturación</b></h2>
+    <div class="sales-grid reveal d2" id="salesGrid"></div>
+    <div class="revenue-total reveal d3" id="revenueTotal"></div>
+  </div>
+</section>
+
+<section id="cierre">
+  <div class="wrap">
+    <div class="mark-lg reveal">
+      <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="19" stroke="#fff" stroke-width="1"/>
+        <path d="M12 15c2-3 6-4 9-2M28 25c-2 3-6 4-9 2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="quote reveal d1" id="closingQuote">"Gracias por confiar en nuestro trabajo"</div>
+    <div class="agency-name reveal d2" id="closingAgency">AUNADS AGENCIA</div>
+    <div class="foot-note reveal d3"><span class="pulse-dot"></span>&nbsp; Informe generado dinámicamente</div>
+  </div>
+</section>
+
+<div class="vmodal" id="vmodal">
+  <div class="vmodal-box">
+    <div class="vmodal-close" id="vmodalClose"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    <div id="vmodalContent"></div>
+  </div>
+</div>
+
+<script src="report-data.js"></script>
+<script>
+/* ============================================================
+   RENDER — construye el DOM a partir de REPORT (report-data.js)
+   ============================================================ */
+(function(){
+  const fmt = n => new Intl.NumberFormat('es-CO').format(Math.round(n));
+  const money = (n,c) => '$' + fmt(n) + ' ' + (c||'USD');
+
+  document.getElementById('brandmarkText').textContent = REPORT.agency.name.split(' ')[0];
+  document.getElementById('portadaAgency').textContent = REPORT.agency.name;
+  document.getElementById('clientName').textContent = REPORT.client.name;
+  document.getElementById('clientPeriod').textContent = REPORT.client.role + ' · ' + REPORT.client.period;
+  document.getElementById('closingQuote').textContent = '"' + REPORT.agency.tagline + '"';
+  document.getElementById('closingAgency').textContent = REPORT.agency.name;
+  if(REPORT.client.heroImage){
+    const hi = document.getElementById('heroImg');
+    hi.src = REPORT.client.heroImage; hi.alt = REPORT.client.name;
+  }
+
+  const check = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const playIcon = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
+
+  // ---- Resumen ----
+  const S = REPORT.summary;
+  const summary = [
+    [S.tiktokViews, 'Reproducciones TikTok'],
+    [S.tiktokFollowers, 'Seguidores TikTok'],
+    [S.igViews, 'Reproducciones Instagram'],
+    [S.igFollowers, 'Seguidores Instagram'],
+    [S.mentorshipsSold, 'Mentorías vendidas'],
+    [S.revenue, 'Facturación (' + (S.currency||'USD') + ')']
+  ];
+  document.getElementById('summaryGrid').innerHTML = summary.map(([v,l])=>`
+    <div class="stat-cell"><div class="stat-num" data-count="${v}">0</div><div class="stat-label">${l}</div></div>
+  `).join('');
+
+  // ---- TikTok ----
+  const T = REPORT.tiktok;
+  const tGrid = [
+    [T.videoViews.value, 'Vistas del video', T.videoViews.delta, T.videoViews.pct],
+    [T.profileViews.value, 'Vistas del perfil', T.profileViews.delta, T.profileViews.pct],
+    [T.likes.value, 'Me gusta', T.likes.delta, T.likes.pct],
+    [T.totalFollowers.value, 'Total de seguidores', null, null, T.totalFollowers.note],
+    [T.netFollowers.value, 'Seguidores netos', T.netFollowers.delta, T.netFollowers.pct]
+  ];
+  document.getElementById('tiktokGrid').innerHTML = tGrid.map(([v,l,d,p,note])=>`
+    <div class="ticket">
+      <div class="ticket-label">${l}</div>
+      <div class="ticket-value" data-count="${v}">0</div>
+      ${d?`<div class="ticket-delta">${check.replace('currentColor','#FFE000')} ${d} (${p})</div>`:''}
+      ${note?`<div class="ticket-note">${note}</div>`:''}
+    </div>
+  `).join('');
+
+  const tMax = Math.max(...T.topVideos.map(v=>v.views));
+  document.getElementById('tiktokVideos').innerHTML = T.topVideos.map((v,i)=>`
+    <div class="vbar-row">
+      <div class="vbar-idx">0${i+1}</div>
+      <div class="vbar-track"><div class="vbar-fill" data-w="${(v.views/tMax*100).toFixed(1)}"></div></div>
+      <div class="vbar-val">${fmt(v.views)}</div>
+    </div>
+  `).join('');
+  document.getElementById('tiktokThumbs').innerHTML = T.topVideos.map((v,i)=>`
+    <div class="vthumb" data-platform="tiktok" data-id="${v.id}">
+      ${v.thumb?`<img src="${v.thumb}" alt="">`:''}
+      <div class="vthumb-idx">0${i+1}</div>
+      <div class="vthumb-play"><span>${playIcon}</span></div>
+      <div class="vthumb-views"><span>${fmt(v.views)}</span><span class="plat">TikTok</span></div>
+    </div>
+  `).join('');
+
+  // ---- Instagram ----
+  const IG = REPORT.instagram;
+  const avatarHTML = REPORT.client.avatarImage
+    ? `<img src="${REPORT.client.avatarImage}" alt="${REPORT.client.name}">`
+    : IG.handle.charAt(0).toUpperCase();
+  document.getElementById('igProfile').innerHTML = `
+    <div class="ig-avatar">${avatarHTML}</div>
+    <div>
+      <div class="ig-handle">@${IG.handle}</div>
+      <div class="ig-bio">${IG.bio}</div>
+      <div class="ig-meta"><span><b>${fmt(IG.posts)}</b> publicaciones</span><span><b>${fmt(IG.followers)}</b> seguidores</span><span><b>${fmt(IG.following)}</b> seguidos</span></div>
+    </div>
+  `;
+  document.getElementById('igGrid').innerHTML = `
+    <div class="ticket"><div class="ticket-label">Visualizaciones</div><div class="ticket-value" data-count="${IG.views}">0</div></div>
+    <div class="ticket"><div class="ticket-label">Seguidores netos</div><div class="ticket-value" data-count="${IG.netFollowers}">0</div>
+      <div class="ticket-delta">${check.replace('currentColor','#FFE000')} este periodo</div></div>
+  `;
+  const igNums = IG.topVideos.map(v=>parseFloat(String(v.views).replace(',', '.')));
+  const igMax = Math.max(...igNums);
+  document.getElementById('igVideos').innerHTML = IG.topVideos.map((v,i)=>`
+    <div class="vbar-row">
+      <div class="vbar-idx">0${i+1}</div>
+      <div class="vbar-track"><div class="vbar-fill" data-w="${(igNums[i]/igMax*100).toFixed(1)}"></div></div>
+      <div class="vbar-val">${v.views}</div>
+    </div>
+  `).join('');
+  document.getElementById('igThumbs').innerHTML = IG.topVideos.map((v,i)=>`
+    <div class="vthumb" data-platform="instagram" data-id="${v.shortcode}">
+      ${v.thumb?`<img src="${v.thumb}" alt="">`:''}
+      <div class="vthumb-idx">0${i+1}</div>
+      <div class="vthumb-play"><span>${playIcon}</span></div>
+      <div class="vthumb-views"><span>${v.views}</span><span class="plat">Reel</span></div>
+    </div>
+  `).join('');
+
+  // ---- Ventas ----
+  const V = REPORT.sales;
+  const icon = p => `<svg class="sale-icon" viewBox="0 0 24 24" fill="none">${p}</svg>`;
+  const icons = {
+    ads: '<path d="M3 11l17-7-6 17-3-7-8-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+    mentor: '<circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+    low: '<path d="M4 18l5-5 4 3 7-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+    cash: '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 9.5c0-1.4 1.3-2.3 3-2.3s3 .8 3 2.1c0 3-6 1.4-6 4.4 0 1.3 1.3 2.1 3 2.1s3-.9 3-2.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'
+  };
+  const sales = [
+    [V.adsInvestment,'Inversión ADS',icons.ads],
+    [V.mentorships,'Mentorías',icons.mentor],
+    [V.lowTicket,'Low ticket',icons.low],
+    [V.cashCollect,'Cash Collect',icons.cash]
+  ];
+  document.getElementById('salesGrid').innerHTML = sales.map(([v,l,ic])=>`
+    <div class="sale-cell">${icon(ic)}<div class="sale-val">${money(v,V.currency)}</div><div class="sale-label">${l}</div></div>
+  `).join('');
+  document.getElementById('revenueTotal').textContent = 'Facturación total del periodo: ' + money(REPORT.summary.revenue, REPORT.summary.currency);
+
+})();
+
+/* ============================================================
+   MODAL DE VIDEO — miniatura clicable -> embed en vivo
+   ============================================================ */
+(function(){
+  const modal = document.getElementById('vmodal');
+  const content = document.getElementById('vmodalContent');
+  const closeBtn = document.getElementById('vmodalClose');
+
+  function embedFor(platform, id){
+    if(platform === 'tiktok'){
+      return `<iframe src="https://www.tiktok.com/embed/v2/${id}" allow="encrypted-media;" allowfullscreen></iframe>`;
+    }
+    if(platform === 'instagram'){
+      return `<iframe src="https://www.instagram.com/reel/${id}/embed" allow="encrypted-media;" allowfullscreen></iframe>`;
+    }
+    return '';
+  }
+
+  function open(platform, id){
+    content.innerHTML = embedFor(platform, id);
+    modal.classList.add('open');
+  }
+  function close(){
+    modal.classList.remove('open');
+    content.innerHTML = '';
+  }
+
+  document.addEventListener('click', (e)=>{
+    const thumb = e.target.closest('.vthumb');
+    if(thumb){ open(thumb.dataset.platform, thumb.dataset.id); return; }
+    if(e.target === modal){ close(); }
+  });
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') close(); });
+})();
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold:.2});
+  els.forEach(el=>io.observe(el));
+
+  // animate bars once visible
+  const bars = document.querySelectorAll('.vbar-fill');
+  const ioBars = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.style.width = e.target.dataset.w + '%'; ioBars.unobserve(e.target); }
+    });
+  }, {threshold:.4});
+  bars.forEach(b=>ioBars.observe(b));
+
+  // count-up numbers
+  const counters = document.querySelectorAll('[data-count]');
+  const ioCount = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      ioCount.unobserve(e.target);
+      const target = parseFloat(e.target.dataset.count);
+      const dur = 1100; const start = performance.now();
+      const fmt = n => new Intl.NumberFormat('es-CO').format(Math.round(n));
+      function step(t){
+        const p = Math.min(1, (t-start)/dur);
+        const eased = 1 - Math.pow(1-p, 3);
+        e.target.textContent = fmt(target*eased);
+        if(p<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }, {threshold:.4});
+  counters.forEach(c=>ioCount.observe(c));
+
+  // nav dots active state
+  const sections = document.querySelectorAll('section[id]');
+  const navlinks = document.querySelectorAll('.navdots a');
+  const ioNav = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navlinks.forEach(a=>a.classList.remove('active'));
+        const link = document.querySelector('.navdots a[href="#'+e.target.id+'"]');
+        if(link) link.classList.add('active');
+      }
+    });
+  }, {threshold:.5});
+  sections.forEach(s=>ioNav.observe(s));
+})();
+
+/* ============================================================
+   PARTÍCULAS AMBIENTALES
+   ============================================================ */
+(function(){
+  const c = document.getElementById('fx');
+  if(!c) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = c.getContext('2d');
+  let w=0,h=0,dpr=1,parts=[];
+  function size(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    w=window.innerWidth; h=window.innerHeight; c.width=w*dpr; c.height=h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function init(){
+    const n = Math.max(50, Math.min(110, Math.round(w*h/9000)));
+    parts = Array.from({length:n}, ()=>({
+      x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.2+.4,
+      vy:-(Math.random()*.14+.03), vx:(Math.random()-.5)*.08,
+      a:Math.random()*.22+.04, tw:Math.random()*Math.PI*2
+    }));
+  }
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of parts){
+      p.y+=p.vy; p.x+=p.vx; p.tw+=0.018;
+      if(p.y<-6){p.y=h+6;p.x=Math.random()*w;}
+      if(p.x<-6)p.x=w+6; if(p.x>w+6)p.x=-6;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283);
+      ctx.fillStyle='rgba(255,255,255,'+(p.a*(0.6+0.4*Math.sin(p.tw)))+')'; ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  size(); init();
+  window.addEventListener('resize', ()=>{ size(); init(); });
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
